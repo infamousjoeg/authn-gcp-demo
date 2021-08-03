@@ -19,19 +19,22 @@
       ## The `audience` claim of the generated JWT will contain the 
       ## host identity and authn-gcp will use the below annotations
       ## to validate trust.
-      - !host compute
+      - !host
+        id: compute
         annotations:
           description: Host identity for GCP Compute Engine VM
           authn-gcp/service-account-id: {{ service-account-id }}
           authn-gcp/service-account-email: {{ service-account-email }}
-      - !host function
+      - !host
+        id: function
         annotations:
           description: Host identity for GCP Cloud Run Function
           authn-gcp/service-account-id: {{ service-account-id }}
           authn-gcp/service-account-email: {{ service-account-email }}
 
     # Create a group called secret-users
-    - !group secret-users
+    - !group
+      id: secret-users
       annotations:
         description: Allows host identities to access secrets defined in gcp policy.
 
