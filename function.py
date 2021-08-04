@@ -31,7 +31,7 @@ print("Conjur Session Token: {}".format(conjur_token.text))
 
 # Form header for Conjur API secret retrieval
 header = {
-    'Authorization': 'Token token={}'.format(conjur_token.text)
+    'Authorization': 'Token token="{}"'.format(conjur_token.text)
 }
 
 # Retrieve and print gcp/db_password secret variable value
