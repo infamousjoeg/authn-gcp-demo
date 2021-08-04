@@ -27,8 +27,6 @@ conjur_token_headers = {
 
 # Form body for Conjur authn-gcp authenticate request
 conjur_token_body = "jwt={}".format(jwt_response.text)
-print()
-print(conjur_token_body)
 
 # Send Google Provided JWT to Conjur authn-gcp authenticate endpoint
 conjur_token = requests.request(

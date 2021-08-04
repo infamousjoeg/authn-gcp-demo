@@ -23,10 +23,10 @@ conjur_token_headers = {
 
 # Form body for Conjur authn-gcp authenticate request
 conjur_token_body = "jwt={}".format(jwt_response.text)
-print(conjur_token_body)
 
 # Send Google Provided JWT to Conjur authn-gcp authenticate endpoint
 conjur_token = requests.request('POST', 'https://dap.joegarcia.dev/authn-gcp/cyberarkdemo/authenticate', headers=conjur_token_headers, data=conjur_token_body)
+print()
 print("Conjur Session Token: {}".format(conjur_token.text))
 
 # Form header for Conjur API secret retrieval
