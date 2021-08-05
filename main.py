@@ -4,83 +4,60 @@ import os
 
 from flask import Flask
 
-conjurApplianceURL = "https://dap.joegarcia.dev"
-conjurAccount = "cyberarkdemo"
 app = Flask(__name__)
 
-# Returns signed JWT from local Google Metadata service
-def google_jwt(audience):
+
+# The main route for testing
+@app.route("/")
+def index():
     # Form headers for Google Metadata request
-    headers = {
+    jwt_headers = {
         'Metadata-Flavor': 'Google',
     }
+
     # Urlify host identity to apply to audience claim
-    audience_claim = audience.replace("/", "%2F")
+    audience_claim = "conjur%2Fcyberarkdemo%2Fhost%2Fgcp%2Ffunction"
+
     # Send request and print response
     jwt_response = requests.request(
         'GET',
-        'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience={}&format=full'.format(audience_claim),        headers=headers
+        'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience={}&format=full'.format(audience_claim),
+        headers=jwt_headers
     )
+    returned_response = "<h2>Google Provided JWT:</h2> <p>{}</p>".format(jwt_response.text)
 
-    return jwt_response.text
-
-# Returns Conjur session token after successful authentication
-def conjur_authenticate(url, account, token):
     # Form headers for Conjur authn-gcp authenticate request
-    headers = {
+    conjur_token_headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept-Encoding': 'base64',
     }
+
     # Form body for Conjur authn-gcp authenticate request
-    body = "jwt={}".format(token)
-    # Send Google-provided JWT to Conjur authn-gcp authenticate endpoint
+    conjur_token_body = "jwt={}".format(jwt_response.text)
+
+    # Send Google Provided JWT to Conjur authn-gcp authenticate endpoint
     conjur_token = requests.request(
         'POST',
-        '{}/authn-gcp/{}/authenticate'.format(url, account),
-        headers=headers,
-        data=body
+        'https://dap.joegarcia.dev/authn-gcp/cyberarkdemo/authenticate',
+        headers=conjur_token_headers,
+        data=conjur_token_body
     )
+    returned_response += "<h2>Conjur Session Token:</h2> <p>{}</p>".format(conjur_token.text)
 
-    return conjur_token.text
-
-# Returns the secret variable from Conjur
-def fetch_secret(url, account, conjur_token, secret_variable):
     # Form header for Conjur API secret retrieval
     header = {
-        'Authorization': 'Token token="{}"'.format(conjur_token)
+        'Authorization': 'Token token="{}"'.format(conjur_token.text)
     }
-
-    # Urlify secret variable since it's passed as a URL parameter
-    urlified_secret_variable = secret_variable.replace("/", "%2F")
 
     # Retrieve and print gcp/db_password secret variable value
     conjur_variable = requests.request(
         'GET',
-        '{}/secrets/{}/variable/{}'.format(url, account, urlified_secret_variable),
+        'https://dap.joegarcia.dev/secrets/cyberarkdemo/variable/gcp%2Fdb_password',
         headers=header
     )
+    returned_response += "<h2>Conjur Secret Variable Value:</h2> <p>{}</p>".format(conjur_variable.text)
 
-    return conjur_variable.text
-
-# The main route for testing
-@app.route("/")
-def hello_world():
-    jwt = google_jwt(
-        "/conjur/authn-gcp/host/gcp/function"
-    )
-    conjur_token = conjur_authenticate(
-        conjurApplianceURL,
-        conjurAccount,
-        jwt
-    )
-    secret_value = fetch_secret(
-        conjurApplianceURL,
-        conjurAccount,
-        conjur_token,
-        "gcp/db_password"
-    )
-
-    return "<p><h2>Google-provided JWT:</h2></p><p>{}</p><p><h2>Conjur Session Token:</h2></p> <p>{}</p><p><h2>Secret Variable Value:</h2></p> <p>{}</p>".format(jwt, conjur_token, secret_value)
+    return returned_response
 
 # The status route for... well... testing, too
 @app.route("/status")
