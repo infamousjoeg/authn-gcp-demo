@@ -9,7 +9,7 @@ conjurAccount = "cyberarkdemo"
 app = Flask(__name__)
 
 # Returns signed JWT from local Google Metadata service
-def google_jwt(service_account, audience):
+def google_jwt(audience):
     # Form headers for Google Metadata request
     headers = {
         'Metadata-Flavor': 'Google',
@@ -19,8 +19,7 @@ def google_jwt(service_account, audience):
     # Send request and print response
     jwt_response = requests.request(
         'GET',
-        'http://metadata/computeMetadata/v1/instance/service-accounts/{}/identity?audience={}&format=full'.format(service_account, audience_claim),
-        headers=headers
+        'http://metadata/computeMetadata/v1/instance/service-accounts/default/identity?audience={}&format=full'.format(audience_claim),        headers=headers
     )
 
     return jwt_response.text
@@ -67,7 +66,6 @@ def fetch_secret(url, account, conjur_token, secret_variable):
 @app.route("/")
 def hello_world():
     jwt = google_jwt(
-        "authn-gcp",
         "/conjur/authn-gcp/host/gcp/function"
     )
     conjur_token = conjur_authenticate(
