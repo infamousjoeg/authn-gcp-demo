@@ -67,7 +67,7 @@ def fetch_secret(url, account, conjur_token, secret_variable):
 @app.route("/")
 def hello_world():
     jwt = google_jwt(
-        "default",
+        "authn-gcp",
         "/conjur/authn-gcp/host/gcp/function"
     )
     conjur_token = conjur_authenticate(
