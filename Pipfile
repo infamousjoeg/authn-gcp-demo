@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 requests = "*"
+gunicorn = "*"
+flask = "*"
 
 [dev-packages]
 
