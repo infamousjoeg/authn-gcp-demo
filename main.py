@@ -16,7 +16,7 @@ def index():
     }
 
     # Urlify host identity to apply to audience claim
-    audience_claim = "cloud%2Fgcp%2Ffunction%2Fproject2"
+    audience_claim = "conjur%2Fcyberarkdemo%2Fhost%2Fcloud%2Fgcp%2Ffunction%2Fproject2"
 
     # Send request and print response
     jwt_response = requests.request(
