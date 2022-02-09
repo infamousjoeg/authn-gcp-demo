@@ -16,7 +16,7 @@ def index():
     }
 
     # Urlify host identity to apply to audience claim
-    audience_claim = "conjur%2Fcyberarkdemo%2Fhost%2Fgcp%2Ffunction"
+    audience_claim = "cloud%2Fgcp%2Ffunction%2Fproject2"
 
     # Send request and print response
     jwt_response = requests.request(
@@ -38,7 +38,7 @@ def index():
     # Send Google Provided JWT to Conjur authn-gcp authenticate endpoint
     conjur_token = requests.request(
         'POST',
-        'https://dap.joegarcia.dev/authn-gcp/cyberarkdemo/authenticate',
+        'https://conjur.joegarcia.dev/authn-gcp/cyberarkdemo/authenticate',
         headers=conjur_token_headers,
         data=conjur_token_body
     )
@@ -52,7 +52,7 @@ def index():
     # Retrieve and print gcp/db_password secret variable value
     conjur_variable = requests.request(
         'GET',
-        'https://dap.joegarcia.dev/secrets/cyberarkdemo/variable/gcp%2Fdb_password',
+        'https://conjur.joegarcia.dev/secrets/cyberarkdemo/variable/cloud%2Fgcp%2Ffunction%2Fdb_password',
         headers=header
     )
     returned_response += "<h2>Conjur Secret Variable Value:</h2> <p>{}</p>".format(conjur_variable.text)
