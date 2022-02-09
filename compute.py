@@ -9,7 +9,7 @@ jwt_headers = {
 }
 
 # Urlify host identity to apply to audience claim
-audience_claim = "cloud%2Fgcp%2Fcompute%2Fproject1"
+audience_claim = "conjur%2Fcyberarkdemo%2Fhost%2Fcloud%2Fgcp%2Fcompute%2Fproject1"
 
 # Send request and print response
 jwt_response = requests.request(
